@@ -83,3 +83,5 @@ for i in range(num_projects):
     projects.append((value, effort, cbi, risk, label))
 
 plot_prioritization_matrix(projects)
+
+#end
