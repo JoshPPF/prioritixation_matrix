@@ -77,7 +77,7 @@ def plot_project_points(ax, projects):
     return ax
 
 # Streamlit app
-st.title('Prioritization Matrix App')
+st.title('Prioritization Matrix')
 
 # Sidebar for project inputs and plot button
 st.sidebar.header('Project Inputs')
