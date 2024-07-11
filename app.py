@@ -86,8 +86,8 @@ num_projects = st.sidebar.number_input('Number of projects', min_value=1, max_va
 
 projects = []
 for i in range(num_projects):
-    st.sidebar.subheader(f'Project {i+1}')
-    label = st.sidebar.text_input(f'Project Name)')
+    st.sidebar.subheader(f'Project')
+    label = st.sidebar.text_input(f'Project {i+1}', f'Project {i+1}')
     value = st.sidebar.number_input(f'Value (Project {i+1})', min_value=0, max_value=4, value=0)
     effort = st.sidebar.number_input(f'Effort (Project {i+1})', min_value=0, max_value=4, value=0)
     cbi = st.sidebar.number_input(f'CBI (Project {i+1})', min_value=0, max_value=4, value=0)
