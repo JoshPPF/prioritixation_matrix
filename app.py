@@ -54,8 +54,9 @@ def plot_project_points(ax, projects):
         y = cbi - risk
 
          # Adjust (0,0) to (-0.5, 0.5)
-        if x == 0 and y == 0:
+        if x == 0:
             x = -0.5
+        if y == 0:
             y = 0.5
 
 
