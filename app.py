@@ -26,10 +26,10 @@ def plot_prioritization_matrix(projects):
     ax.yaxis.set_ticks_position('left')
 
     # Add quadrant labels at the corners outside the graph
-    plt.text(-4.5, 4.5, 'P3', fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
-    plt.text(4.5, 4.5, 'P2', fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
-    plt.text(-4.5, -4.5, "Don't Do", fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
-    plt.text(4.5, -4.5, 'P4', fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
+    plt.text(-4, 4, 'P3', fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
+    plt.text(4, 4, 'P2', fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
+    plt.text(-4, -4, "Don't Do", fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
+    plt.text(4, -4, 'P4', fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
 
     # Set axis titles just inside the graph
     plt.text(3.5, 0.3, 'Value', fontsize=12, ha='center', va='center')
@@ -43,11 +43,21 @@ def plot_prioritization_matrix(projects):
     ax.fill_betweenx(np.arange(-4, 0.1, 0.1), 0, 4, color='#8ecae6', alpha=0.5)  # Blue for P4
     ax.fill_betweenx(np.arange(-4, 0.1, 0.1), -4, 0, color='#ff9aa2', alpha=0.5)  # Red for Don't Do
 
+    return fig, ax
+
+# Function to plot project points
+def plot_project_points(ax, projects):
     # Plot points
     for value, effort, cbi, risk, label in projects:
         # Calculate x and y coordinates
         x = value - effort
         y = cbi - risk
+
+         # Adjust (0,0) to (-0.5, 0.5)
+        if x == 0 and y == 0:
+            x = -0.5
+            y = 0.5
+
 
         # Ensure points are within quadrants
         if x > 4:
@@ -63,11 +73,12 @@ def plot_prioritization_matrix(projects):
         ax.plot(x, y, 'o', label=label)
         ax.text(x, y, label, fontsize=9, ha='right')
 
-    plt.title('Prioritization Matrix')
-    st.pyplot(fig)
+    return ax
 
+# Streamlit app
 st.title('Prioritization Matrix App')
 
+# Sidebar for project inputs and plot button
 st.sidebar.header('Project Inputs')
 
 num_projects = st.sidebar.number_input('Number of projects', min_value=1, max_value=10, value=1)
@@ -76,12 +87,21 @@ projects = []
 for i in range(num_projects):
     st.sidebar.subheader(f'Project {i+1}')
     label = st.sidebar.text_input(f'Label (Project {i+1})', f'Project {i+1}')
-    value = st.sidebar.slider(f'Value (Project {i+1})', 0, 4, 0)
-    effort = st.sidebar.slider(f'Effort (Project {i+1})', 0, 4, 0)
-    cbi = st.sidebar.slider(f'CBI (Project {i+1})', 0, 4, 0)
-    risk = st.sidebar.slider(f'Risk (Project {i+1})', 0, 4, 0)
+    value = st.sidebar.number_input(f'Value (Project {i+1})', min_value=0, max_value=4, value=0)
+    effort = st.sidebar.number_input(f'Effort (Project {i+1})', min_value=0, max_value=4, value=0)
+    cbi = st.sidebar.number_input(f'CBI (Project {i+1})', min_value=0, max_value=4, value=0)
+    risk = st.sidebar.number_input(f'Risk (Project {i+1})', min_value=0, max_value=4, value=0)
     projects.append((value, effort, cbi, risk, label))
 
-plot_prioritization_matrix(projects)
+# Button to plot priorities
+if st.sidebar.button('Plot Priorities'):
 
-#end
+
+    # Plot the prioritization matrix
+    fig, ax = plot_prioritization_matrix(projects)
+    
+    # Plot project points on the same graph
+    plot_project_points(ax, projects)
+
+    # Display the plot
+    st.pyplot(fig)
