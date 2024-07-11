@@ -80,7 +80,7 @@ def plot_project_points(ax, projects):
 st.title('Prioritization Matrix')
 
 # Sidebar for project inputs and plot button
-st.sidebar.header('Project Inputs')
+st.sidebar.header('Projects')
 
 num_projects = st.sidebar.number_input('Number of projects', min_value=1, max_value=10, value=1)
 
