@@ -13,9 +13,9 @@ def plot_prioritization_matrix(projects):
 
     # Remove the zero label from the axis
     ax.set_xticks(range(-4, 5))
-    ax.set_xticklabels(['4', '3', '2', '1', '', '1', '2', '3', '4'])
+    ax.set_xticklabels(['', '', '', '', '', '', '', '', ''])
     ax.set_yticks(range(-4, 5))
-    ax.set_yticklabels(['4', '3', '2', '1', '', '1', '2', '3', '4'])
+    ax.set_yticklabels(['', '', '', '', '', '', '', '', ''])
 
     # Move the axes to the center
     ax.spines['left'].set_position('center')
@@ -25,11 +25,11 @@ def plot_prioritization_matrix(projects):
     ax.xaxis.set_ticks_position('bottom')
     ax.yaxis.set_ticks_position('left')
 
-    # Add quadrant labels at the corners outside the graph
-    plt.text(-4, 4, 'P3', fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
-    plt.text(4, 4, 'P2', fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
-    plt.text(-4, -4, "Don't Do", fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
-    plt.text(4, -4, 'P4', fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
+      # Add quadrant labels at the center of each quadrant
+    plt.text(-2, 2, 'P3', fontsize=20, ha='center', va='center', color='#ffb74d')
+    plt.text(2, 2, 'P2', fontsize=20, ha='center', va='center', color='#8bc34a')
+    plt.text(-2, -2, "Re-think", fontsize=20, ha='center', va='center', color='#e57373')
+    plt.text(2, -2, 'P4', fontsize=20, ha='center', va='center', color='#64b5f6')
 
     # Set axis titles just inside the graph
     plt.text(3.5, 0.3, 'Value', fontsize=12, ha='center', va='center')
@@ -76,8 +76,12 @@ def plot_project_points(ax, projects):
 
     return ax
 
+# Initialize session state for labels
+if 'labels' not in st.session_state:
+    st.session_state['labels'] = [f'Project {i+1}' for i in range(10)]
+
 # Streamlit app
-st.title('Prioritization Matrix')
+st.markdown("<h1 style='text-align: center;'>Prioritization Matrix App</h1>", unsafe_allow_html=True)
 
 # Sidebar for project inputs and plot button
 st.sidebar.header('Projects')
@@ -86,13 +90,14 @@ num_projects = st.sidebar.number_input('Number of projects', min_value=1, max_va
 
 projects = []
 for i in range(num_projects):
-    st.sidebar.subheader(f'Project')
-    label = st.sidebar.text_input(f'Project {i+1}', f'Project {i+1}')
-    value = st.sidebar.number_input(f'Value (Project {i+1})', min_value=0, max_value=4, value=0)
-    effort = st.sidebar.number_input(f'Effort (Project {i+1})', min_value=0, max_value=4, value=0)
-    cbi = st.sidebar.number_input(f'CBI (Project {i+1})', min_value=0, max_value=4, value=0)
-    risk = st.sidebar.number_input(f'Risk (Project {i+1})', min_value=0, max_value=4, value=0)
-    projects.append((value, effort, cbi, risk, label))
+    with st.sidebar.expander(st.session_state['labels'][i]):
+        label = st.text_input(f'Name (Project {i+1})', st.session_state['labels'][i], key=f'label_{i}')
+        st.session_state['labels'][i] = label  # Update session state with the new label
+        value = st.number_input(f'Value (Project {i+1})', min_value=0, max_value=4, value=0, key=f'value_{i}')
+        effort = st.number_input(f'Effort (Project {i+1})', min_value=0, max_value=4, value=0, key=f'effort_{i}')
+        cbi = st.number_input(f'CBI (Project {i+1})', min_value=0, max_value=4, value=0, key=f'cbi_{i}')
+        risk = st.number_input(f'Risk (Project {i+1})', min_value=0, max_value=4, value=0, key=f'risk_{i}')
+        projects.append((value, effort, cbi, risk, label))
 
 # Button to plot priorities
 if st.sidebar.button('Plot Priorities'):
