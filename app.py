@@ -72,7 +72,8 @@ def plot_project_points(ax, projects):
 
         # Plot adjusted points
         ax.plot(x, y, 'o', label=label)
-        ax.text(x, y, label, fontsize=9, ha='right')
+        # Plot label centrally and underneath the dot
+        ax.text(x, y - 0.1, label, fontsize=9, ha='center', va='top')  # Adjusted here
 
     return ax
 
