@@ -57,9 +57,13 @@ def plot_project_points(ax, projects):
 
     return ax
 
-# Initialize session state for labels
+# Initialize session state for labels and temporary labels
 if 'labels' not in st.session_state:
     st.session_state['labels'] = [f'Project {i+1}' for i in range(10)]
+if 'temp_labels' not in st.session_state:
+    st.session_state['temp_labels'] = st.session_state['labels'][:]
+if 'expanded' not in st.session_state:
+    st.session_state['expanded'] = [False] * 10  # Track expander states
 
 # Streamlit app
 st.markdown("<h1 style='text-align: center;'>Prioritization Matrix App</h1>", unsafe_allow_html=True)
@@ -71,21 +75,26 @@ num_projects = st.sidebar.number_input('Number of projects', min_value=1, max_va
 
 projects = []
 for i in range(num_projects):
-    with st.sidebar.expander(st.session_state['labels'][i]):
-        label = st.text_input(f'Name (Project {i+1})', st.session_state['labels'][i], key=f'label_{i}')
+    with st.sidebar.expander(st.session_state['temp_labels'][i], expanded=st.session_state['expanded'][i]):
+        label = st.text_input(f'Name (Project {i+1})', st.session_state['temp_labels'][i], key=f'label_{i}')
         
-        # Update session state immediately on label change
-        if label != st.session_state['labels'][i]:
-            st.session_state['labels'][i] = label
+        # Temporary labels updated without session state change
+        st.session_state['temp_labels'][i] = label
         
         value = st.number_input(f'Value (Project {i+1})', min_value=0, max_value=4, value=0, key=f'value_{i}')
         effort = st.number_input(f'Effort (Project {i+1})', min_value=0, max_value=4, value=0, key=f'effort_{i}')
         cbi = st.number_input(f'CBI (Project {i+1})', min_value=0, max_value=4, value=0, key=f'cbi_{i}')
         risk = st.number_input(f'Risk (Project {i+1})', min_value=0, max_value=4, value=0, key=f'risk_{i}')
-        projects.append((value, effort, cbi, risk, st.session_state['labels'][i]))
+        projects.append((value, effort, cbi, risk, st.session_state['temp_labels'][i]))
+
+        # Save expander state
+        st.session_state['expanded'][i] = True  # Keep expander open
 
 # Button to plot priorities
 if st.sidebar.button('Plot Priorities'):
+    # Update session state labels from temporary labels
+    st.session_state['labels'] = st.session_state['temp_labels'][:]
+    
     # Plot the prioritization matrix
     fig, ax = plot_prioritization_matrix()
     
