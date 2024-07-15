@@ -63,7 +63,7 @@ if 'labels' not in st.session_state:
 if 'temp_labels' not in st.session_state:
     st.session_state['temp_labels'] = st.session_state['labels'][:]
 if 'expanded' not in st.session_state:
-    st.session_state['expanded'] = [False] * 20
+    st.session_state['expanded'] = [True] * 20
 
 # Streamlit app
 st.markdown("<h1 style='text-align: center;'>Prioritization Matrix App</h1>", unsafe_allow_html=True)
