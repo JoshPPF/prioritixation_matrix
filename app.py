@@ -81,19 +81,20 @@ def plot_project_points(ax, projects):
 if 'labels' not in st.session_state:
     st.session_state['labels'] = [f'Project {i+1}' for i in range(10)]
 
-# Streamlit app
-st.markdown("<h1 style='text-align: center;'>Prioritization Matrix App</h1>", unsafe_allow_html=True)
-
 # Sidebar for project inputs and plot button
 st.sidebar.header('Projects')
-
 num_projects = st.sidebar.number_input('Number of projects', min_value=1, max_value=10, value=1)
+
+# Reset expander states if number of projects changes
+if 'expanders' not in st.session_state or len(st.session_state['expanders']) != num_projects:
+    st.session_state['expanders'] = [False] * num_projects  # All expanders initially closed
 
 projects = []
 for i in range(num_projects):
-    with st.sidebar.expander(st.session_state['labels'][i]):
+    with st.sidebar.expander(st.session_state['labels'][i], expanded=st.session_state['expanders'][i]):
         label = st.text_input(f'Name (Project {i+1})', st.session_state['labels'][i], key=f'label_{i}')
-        st.session_state['labels'][i] = label  # Update session state with the new label
+        if label != st.session_state['labels'][i]:
+            st.session_state['labels'][i] = label  # Update only when necessary
         value = st.number_input(f'Value (Project {i+1})', min_value=0, max_value=4, value=0, key=f'value_{i}')
         effort = st.number_input(f'Effort (Project {i+1})', min_value=0, max_value=4, value=0, key=f'effort_{i}')
         cbi = st.number_input(f'CBI (Project {i+1})', min_value=0, max_value=4, value=0, key=f'cbi_{i}')
@@ -102,13 +103,6 @@ for i in range(num_projects):
 
 # Button to plot priorities
 if st.sidebar.button('Plot Priorities'):
-
-
-    # Plot the prioritization matrix
     fig, ax = plot_prioritization_matrix(projects)
-    
-    # Plot project points on the same graph
     plot_project_points(ax, projects)
-
-    # Display the plot
     st.pyplot(fig)
